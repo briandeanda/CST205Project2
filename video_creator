@@ -1,0 +1,83 @@
+import random##need this library to give a random location of shapes
+
+from javax.swing import JFrame, JLabel##importing swing funtionsto create a message bar
+from java.awt.BorderLayout import NORTH, SOUTH
+from java.awt import Font
+from java.awt import Color
+
+frame = JFrame("Video Maker", size = (700,120))#creating a window with banner and dimensions
+frame.visible = true##allows our frame to be display
+frame.contentPane.layout=java.awt.BorderLayout()
+
+completed = JLabel("")##the text will constantly be changing
+completed.setFont(Font("Georgia", Font.PLAIN, 30))
+frame.add(completed, SOUTH)##adding message to frame                  
+
+message = JLabel("")##the text will constantly be changing
+message.setFont(Font("Georgia", Font.PLAIN, 30))
+message.setForeground(Color.RED)
+frame.add(message, NORTH)##adding message to frame
+
+######chossing colors#######
+message.text = "Choose a color for the first shape"##substituting message in Jlabel
+color1 = pickAColor()##users is choosing the color for the oval
+
+message.text = "Choose a color for the second shape"##substituting message in Jlabel
+color2 = pickAColor()##users is choosing the color for the rectangle
+
+message.text = "Choose a color for the third shape"##substituting message in Jlabel
+color3 = pickAColor()##users is choosing the color for the lines 
+
+message.text = "Choose a color for the background of your video"##substituting message in Jlabel
+background = pickAColor()##users is choosing the color for the background
+###########################
+
+message.text = "Choose the sound that will create your video"##substituting message in Jlabel
+file = pickAFile()##this alows the user to choose a sound file
+sound = makeSound(file)##takes picked file and creates sound from it 
+
+picture = makeEmptyPicture(500,500,background)##this makes an empty screen
+
+samps = getSamples(sound)##gets values that will be use to create a shape
+
+videoName = requestString("What would you like to name your video? ")##user decide for the name of the video
+
+for num in range(0, 101):##the loop can be as big as you want, but the picture  
+                        ##will not look good if the range is too big  
+    message.text = "Creating Video"##updating Jlabel 
+    completed.text = str(num) + "% completed"##substituting message in Jlabel
+    
+    x = random.randint(0,500)##random x location for the shape
+    y = random.randint(0,500)##random y location for the shape
+    
+    if(samps[num].value % 7 == 0):
+      addOval(picture,x,y,75,75,color1)##creates oval if sample number is divisible by 7 
+            
+    elif(samps[num].value % 2 == 0):
+      addRect(picture,x,y,75,75,color2)##creates rectangel if sample number is divisible by 2
+      
+    elif(samps[num].value % 3 == 0):
+      endx = random.randint(x,500)
+      endy = random.randint(y,500)
+      addLine(picture,x,y,endx,endy,color3)##creates line if sample number is divsible by 3
+      
+    ##picture = duplicatePicture(picture)##useless
+    repaint(picture)##this uses the previously made picture 
+                    ##to create new pictures
+                    
+    play(sound)##this will keep playing the sound as long as the pictures
+               ##are being created
+               
+    ##this is creating a directory for where I want every picture to be saved
+    file = (r"C:\Users\briandeanda\Desktop\CST205Project2\JESvideo\videoFrame" + str(num) + ".jpg")##creating each video frame
+    ##this is saving every new picture in the specific folder I created
+    writePictureTo(picture, file)##storing each picture frame
+
+completed.text = " "###setting Jlabel as empty
+message.text = "Video has been store in JESvideo folder"##letting the user know that the video has been stored
+
+
+myMovie = makeMovieFromInitialFile(r"C:\Users\briandeanda\Desktop\CST205Project2\JESvideo\videoFrame0.jpg")##picking the first picture frame to start video
+writeQuicktime(myMovie,r"C:\Users\briandeanda\Desktop\CST205Project2\JESvideo\\" + videoName + '.mov',5)##creating video and stroring in in folder
+
+
